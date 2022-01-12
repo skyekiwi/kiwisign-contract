@@ -14,10 +14,13 @@ contract KiwiSign is ERC721URIStorage {
 
 	uint private constant IPFS_CID_LEN = 46;
 
+	event ContractRegistered (uint contract_id, string metadata);
+	event ContractSigned (uint contract_id, string input, address signer);
+
 	mapping (uint256 => string) private contract_metadata;
 	mapping (uint256 => address) private contract_key;
 
-	constructor() ERC721("KiwiSignPoA", "KSPoA") {}
+	constructor() ERC721("KiwiSignPoAV0", "KSPoAV0") {}
 	
 	function getCurrentContractId() external view returns(uint) {
 		return contract_id.current();
@@ -30,26 +33,31 @@ contract KiwiSign is ERC721URIStorage {
 		contract_metadata[contract_id.current()] = metadata;
 		contract_key[contract_id.current()] = public_key;
 
+		emit ContractRegistered(contract_id.current(), metadata);
 		return contract_id.current();
 	}
 
-	function verifySignature(bytes calldata signature, uint256 id, address caller) external returns(bool) {
-			if (msg.sender != address(this)) {
-				require(caller == msg.sender, "bad origin, access denied");
-			}
+	function verifySignature(bytes calldata signature, uint256 id, string calldata input_cid) external returns(bool) {
+		require(bytes(input_cid).length == IPFS_CID_LEN, 'invalid input CID');
 
-			address pub_address = this.getSigner(this.createSignatureHash(caller, id), signature);
-			require(pub_address == contract_key[id], "signature verification failed");
+		// the signature verification implicitly assures the contract_id (id) is valid
+		address pub_address = this.getSigner(this.createSignatureHash(msg.sender, id), signature);
+		require(pub_address == contract_key[id], "signature verification failed");
 
-			poa_id.increment();
-			uint256 new_poa_id = uint256(keccak256(abi.encodePacked(
-				caller, poa_id.current(), block.timestamp
-			)));
+		poa_id.increment();
+		uint256 new_poa_id = uint256(keccak256(abi.encodePacked(
+			msg.sender, poa_id.current(), block.timestamp
+		)));
 
-			_mint(caller, new_poa_id);
-			_setTokenURI(new_poa_id, this.bytes32ToString(keccak256(abi.encode(id))));
+		_mint(msg.sender, new_poa_id);
+		_setTokenURI(new_poa_id, this.bytes32ToString(keccak256(abi.encode(id))));
 
-			return true;
+		emit ContractSigned(id, input_cid, msg.sender);
+		return true;
+	}
+
+	function getMetadataFromContractId(uint256 id) external view returns(string memory) {
+		return contract_metadata[id];
 	}
 	
 	function createSignatureHash(address signer, uint256 id) external pure returns(bytes32) {
