@@ -5,7 +5,7 @@
   "scripts": {
     "test": "mocha -r ts-node/register ./test/*.test.ts",
     "build": "npx truffle compile",
-    "deploy": "npx truffle migirate --network kovan --reset --skip-dry-run"
+    "deploy": "npx truffle migirate --network rinkeby --reset --skip-dry-run"
   },
   "dependencies": {
     "@babel/core": "^7.12.3",

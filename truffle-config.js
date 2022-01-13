@@ -4,6 +4,7 @@ const path = require("path")
 require('dotenv').config()
 
 const kovanNode = process.env.KOVAN_NODE;
+const rinkebyNode = process.env.RINKEBY_NODE;
 const privateKey = process.env.PRIVATE_KEY;
 
 module.exports = {
@@ -12,6 +13,13 @@ module.exports = {
     kovan: { 
       provider: new HDWalletProvider(privateKey, kovanNode, 0),
       network_id: 42,
+      gas: 10000000
+    },
+  },
+  networks: {
+    rinkeby: { 
+      provider: new HDWalletProvider(privateKey, rinkebyNode, 0),
+      network_id: 4,
       gas: 10000000
     },
   },
