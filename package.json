@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha -r ts-node/register ./test/*.test.ts",
     "build": "npx truffle compile",
-    "deploy": "npx truffle migirate --network rinkeby --reset --skip-dry-run"
+    "deploy": "npx truffle migirate --network rinkeby --reset --skip-dry-run",
+    "createscript" : "npx ts-node ./scripts/createdummycontracts.ts"
   },
   "dependencies": {
     "@babel/core": "^7.12.3",
@@ -19,16 +20,18 @@
     "dotenv": "^10.0.0",
     "ethereum-public-key-to-address": "^0.0.5",
     "express": "^4.17.1",
+    "mocha": "^9.1.4",
     "openzeppelin-solidity": "^3.1.0",
     "regenerator-runtime": "^0.13.7",
-    "secp256k1": "^4.0.2"
+    "secp256k1": "^4.0.2",
+    "web3": "^1.7.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.0.3",
     "@types/node": "^10.11.4",
     "chai": "^4.2.0",
-    "ts-node": "^10.0.0",
+    "ts-node": "^10.4.0",
     "tslint": "^5.11.0",
     "tslint-microsoft-contrib": "^5.2.1",
     "typescript": "^4.2.4"
